@@ -12,7 +12,7 @@ const (
 	// of the keypath.
 	//
 	// For example, `location.address.city`
-	PathSeparator string = "."
+	PathSeparator string = "\\"
 
 	// arrayAccesRegexString is the regex used to extract the array number
 	// from the access path

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/objx"
+	"github.com/firawe/objx"
 	"github.com/stretchr/testify/assert"
 )
 
