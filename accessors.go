@@ -42,8 +42,8 @@ var mapAccessRegex = regexp.MustCompile(mapAccessRegexString)
 // To access the title of the third chapter of the second book, do:
 //
 //    o.Get("books[1].chapters[2].title")
-func (m Map) Get(selector string) *Value {
-	rawObj := access(m, selector, nil, false)
+func (m Map) Get(selector string, opts ...*Option) *Value {
+	rawObj := access(m, selector, nil, false, opts...)
 	return &Value{data: rawObj}
 }
 
@@ -57,8 +57,8 @@ func (m Map) Get(selector string) *Value {
 // To set the title of the third chapter of the second book, do:
 //
 //    o.Set("books[1].chapters[2].title","Time to Go")
-func (m Map) Set(selector string, value interface{}) Map {
-	access(m, selector, value, true)
+func (m Map) Set(selector string, value interface{}, opts ...*Option) Map {
+	access(m, selector, value, true, opts...)
 	return m
 }
 
@@ -113,7 +113,7 @@ func getKey(s string) (string, string) {
 
 // access accesses the object using the selector and performs the
 // appropriate action.
-func access(current interface{}, selector string, value interface{}, isSet bool) interface{} {
+func access(current interface{}, selector string, value interface{}, isSet bool, opts ...*Option) interface{} {
 	thisSel, nextSel := getKey(selector)
 
 	index := -1
@@ -121,9 +121,20 @@ func access(current interface{}, selector string, value interface{}, isSet bool)
 		index, thisSel = getIndex(thisSel)
 	}
 
-	if curMap, ok := current.(Map); ok {
-		current = map[string]interface{}(curMap)
+	switch current.(type) {
+	case Map:
+		current = map[string]interface{}(current.(Map))
+	case map[string]interface{}, []interface{}:
+		break
+	default:
+		valueOfCurrent := reflect.ValueOf(current)
+		for _, opt := range opts {
+			if opt.Value.Type().Name() == valueOfCurrent.Type().Name() {
+				current = opt.ConvertToMap(current)
+			}
+		}
 	}
+
 	// get the object in question
 	switch current.(type) {
 	case map[string]interface{}:
@@ -154,7 +165,7 @@ func access(current interface{}, selector string, value interface{}, isSet bool)
 		}
 	}
 	if nextSel != "" {
-		current = access(current, nextSel, value, isSet)
+		current = access(current, nextSel, value, isSet, opts...)
 	}
 	return current
 }
