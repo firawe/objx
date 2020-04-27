@@ -128,7 +128,7 @@ func access(current interface{}, selector string, value interface{}, isSet bool,
 		break
 	default:
 		valueOfCurrent := reflect.ValueOf(current)
-		if !valueOfCurrent.IsZero() && valueOfCurrent.IsValid() {
+		if valueOfCurrent.IsValid() && !valueOfCurrent.IsZero() {
 			for _, opt := range opts {
 				if opt.Value.Type().Name() == valueOfCurrent.Type().Name() {
 					current = opt.ConvertToMap(current)
