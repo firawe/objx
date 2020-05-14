@@ -35,10 +35,10 @@ func TestAccessorsAccessGetDeep(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "Tyler", m.Get("name.first").Data())
-	assert.Equal(t, "Bunnell", m.Get("name.last").Data())
-	assert.Equal(t, "Capitol", m.Get("name.friends[0]").Data())
-	assert.Equal(t, "Capitol", m.Get("name.ifriends[0]").Data())
+	assert.Equal(t, "Tyler", m.Get("name\\first").Data())
+	assert.Equal(t, "Bunnell", m.Get("name\\last").Data())
+	assert.Equal(t, "Capitol", m.Get("name\\friends[0]").Data())
+	assert.Equal(t, "Capitol", m.Get("name\\ifriends[0]").Data())
 }
 
 func TestAccessorsAccessGetDeepDeep(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAccessorsAccessGetDeepDeep(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, 4, m.Get("one.two.three.four").Data())
+	assert.Equal(t, 4, m.Get("one\\two\\three\\four").Data())
 	assert.Equal(t, 4, m.Get("one[two][three][four]").Data())
 }
 
@@ -68,9 +68,9 @@ func TestAccessorsGetWithComplexKey(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "example", m.Get("domains.example-dot-com.apex").Data())
+	assert.Equal(t, "example", m.Get("domains\\example-dot-com\\apex").Data())
 
-	assert.Equal(t, "example", m.Get("domains[example.com].apex").Data())
+	assert.Nil(t, m.Get("domains[example.com]\\apex").Data())
 	assert.Equal(t, "example", m.Get("domains[example.com][apex]").Data())
 }
 
@@ -88,10 +88,10 @@ func TestAccessorsAccessGetInsideArray(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "Tyler", m.Get("names[0].first").Data())
-	assert.Equal(t, "Bunnell", m.Get("names[0].last").Data())
-	assert.Equal(t, "Capitol", m.Get("names[1].first").Data())
-	assert.Equal(t, "Bollocks", m.Get("names[1].last").Data())
+	assert.Equal(t, "Tyler", m.Get("names[0]\\first").Data())
+	assert.Equal(t, "Bunnell", m.Get("names[0]\\last").Data())
+	assert.Equal(t, "Capitol", m.Get("names[1]\\first").Data())
+	assert.Equal(t, "Bollocks", m.Get("names[1]\\last").Data())
 
 	assert.Nil(t, m.Get("names[2]").Data())
 	assert.Nil(t, m.Get("names[]").Data())
@@ -137,11 +137,11 @@ func TestAccessorsAccessSetDeep(t *testing.T) {
 		},
 	}
 
-	m.Set("name.first", "Mat")
-	m.Set("name.last", "Ryer")
+	m.Set("name\\first", "Mat")
+	m.Set("name\\last", "Ryer")
 
-	assert.Equal(t, "Mat", m.Get("name.first").Data())
-	assert.Equal(t, "Ryer", m.Get("name.last").Data())
+	assert.Equal(t, "Mat", m.Get("name\\first").Data())
+	assert.Equal(t, "Ryer", m.Get("name\\last").Data())
 }
 
 func TestAccessorsAccessSetDeepDeep(t *testing.T) {
@@ -155,26 +155,26 @@ func TestAccessorsAccessSetDeepDeep(t *testing.T) {
 		},
 	}
 
-	m.Set("one.two.three.four", 5)
+	m.Set("one\\two\\three\\four", 5)
 
-	assert.Equal(t, 5, m.Get("one.two.three.four").Data())
+	assert.Equal(t, 5, m.Get("one\\two\\three\\four").Data())
 }
 
 func TestAccessorsAccessSetDeepDeepWithoutExisting(t *testing.T) {
 	m := objx.Map{}
 
-	m.Set("one.two.three.four", 5)
-	m.Set("one.two.three.five", 6)
+	m.Set("one\\two\\three\\four", 5)
+	m.Set("one\\two\\three\\five", 6)
 
-	assert.Equal(t, 5, m.Get("one.two.three.four").Data())
-	assert.Equal(t, 6, m.Get("one.two.three.five").Data())
+	assert.Equal(t, 5, m.Get("one\\two\\three\\four").Data())
+	assert.Equal(t, 6, m.Get("one\\two\\three\\five").Data())
 
-	m.Set("one.two", 7)
-	assert.Equal(t, 7, m.Get("one.two").Data())
-	assert.Equal(t, nil, m.Get("one.two.three.four").Data())
+	m.Set("one\\two", 7)
+	assert.Equal(t, 7, m.Get("one\\two").Data())
+	assert.Equal(t, nil, m.Get("one\\two\\three\\four").Data())
 
-	m.Set("one.two.three", 8)
-	assert.Equal(t, 8, m.Get("one.two.three").Data())
+	m.Set("one\\two\\three", 8)
+	assert.Equal(t, 8, m.Get("one\\two\\three").Data())
 }
 
 func TestAccessorsAccessSetArray(t *testing.T) {

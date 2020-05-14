@@ -27,19 +27,19 @@ var fixtures = []struct {
 	{
 		name:   "Get with dot notation",
 		data:   `{"address": {"city": "Boulder"}}`,
-		get:    "address.city",
+		get:    "address\\city",
 		output: "Boulder",
 	},
 	{
 		name:   "Deep get with dot notation",
 		data:   `{"one": {"two": {"three": {"four": "hello"}}}}`,
-		get:    "one.two.three.four",
+		get:    "one\\two\\three\\four",
 		output: "hello",
 	},
 	{
 		name:   "Get missing with dot notation",
 		data:   `{"one": {"two": {"three": {"four": "hello"}}}}`,
-		get:    "one.ten",
+		get:    "one\\ten",
 		output: nil,
 	},
 	{
@@ -51,31 +51,31 @@ var fixtures = []struct {
 	{
 		name:   "Get with array and dot notation",
 		data:   `{"types": { "tags": ["one", "two", "three"]}}`,
-		get:    "types.tags[1]",
+		get:    "types\\tags[1]",
 		output: "two",
 	},
 	{
 		name:   "Get with array and dot notation - field after array",
 		data:   `{"tags": [{"name":"one"}, {"name":"two"}, {"name":"three"}]}`,
-		get:    "tags[1].name",
+		get:    "tags[1]\\name",
 		output: "two",
 	},
 	{
 		name:   "Complex get with array and dot notation",
 		data:   `{"tags": [{"list": [{"one":"pizza"}]}]}`,
-		get:    "tags[0].list[0].one",
+		get:    "tags[0]\\list[0]\\one",
 		output: "pizza",
 	},
 	{
 		name:   "Get field from within string should be nil",
 		data:   `{"name":"Tyler"}`,
-		get:    "name.something",
+		get:    "name\\something",
 		output: nil,
 	},
 	{
 		name:   "Get field from within string (using array accessor) should be nil",
 		data:   `{"numbers":["one", "two", "three"]}`,
-		get:    "numbers[0].nope",
+		get:    "numbers[0]\\nope",
 		output: nil,
 	},
 }

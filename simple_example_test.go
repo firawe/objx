@@ -38,5 +38,5 @@ func TestSimpleExample(t *testing.T) {
 	assert.Equal(t, "italian", o.Get("foods[0]").Str())
 
 	// Get a value by using dot notation
-	assert.Equal(t, "hobbiton", o.Get("location.county").Str())
+	assert.Equal(t, "hobbiton", o.Get("location\\county").Str())
 }
