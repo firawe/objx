@@ -91,7 +91,7 @@ func getKey(s string) (string, string) {
 
 	mapMatches := mapAccessRegex.FindStringSubmatch(s)
 	if len(mapMatches) > 0 {
-		if _, err := strconv.Atoi(mapMatches[2]); err != nil {
+		if _, err := strconv.Atoi(mapMatches[2]); err == nil {
 			thisSel = mapMatches[1]
 			nextSel = "[" + mapMatches[2] + "]" + mapMatches[3]
 
