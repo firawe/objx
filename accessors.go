@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -151,6 +153,10 @@ func access(current interface{}, selector string, value interface{}, isSet bool,
 		if !ok {
 			// try to cast to objx.Map instead
 			_, ok = curMSI[thisSel].(Map)
+			if !ok {
+				// try to cast to bson.M instead
+				_, ok = curMSI[thisSel].(bson.M)
+			}
 		}
 		if (curMSI[thisSel] == nil || !ok) && index == -1 && isSet {
 			curMSI[thisSel] = map[string]interface{}{}
