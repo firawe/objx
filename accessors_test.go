@@ -187,6 +187,24 @@ func TestAccessorsAccessSetArray(t *testing.T) {
 	assert.Equal(t, "Heafy", m.Get("names[1]").Data())
 }
 
+func TestAccessorsAccessSetArrayNested(t *testing.T) {
+	m := objx.Map{
+		"persons": []interface{}{
+			objx.Map{
+				"first": "John",
+				"last":  "Doe",
+				"profession": objx.Map{
+					"name": "Unknowing",
+				},
+			},
+		},
+	}
+	m.Set("persons[0]\\last", "Wick")
+	m.Set("persons[0]\\profession\\name", "Baba Jaga")
+	assert.Equal(t, "Wick", m.Get("persons[0]\\last").Data())
+	assert.Equal(t, "Baba Jaga", m.Get("persons[0]\\profession\\name").Data())
+}
+
 // func TestAccessorsAccessSetArrayDeep(t *testing.T) {
 // 	m := objx.Map{
 // 		"deepNames": []interface{}{[]interface{}{[]interface{}{"deepTyler", "deepDylan"}}},
@@ -204,6 +222,28 @@ func TestAccessorsAccessSetArrayNotExisting(t *testing.T) {
 	m.Set("names[1]", "Mat")
 	assert.Equal(t, "Tyler", m.Get("names[0]").Data())
 	assert.Equal(t, "Mat", m.Get("names[1]").Data())
+}
+
+func TestAccessorsAccessSetArrayNestedNotExisting(t *testing.T) {
+	m := objx.Map{
+		"persons": []interface{}{
+			objx.Map{
+				"first": "John",
+				"last":  "Doe",
+				"profession": objx.Map{
+					"name": "Unknowing",
+				},
+			},
+		},
+	}
+	m.Set("persons[0]\\age", 42)
+	m.Set("persons[0]\\profession\\salary", 1)
+	assert.Equal(t, 42, m.Get("persons[0]\\age").Data())
+	assert.Equal(t, 1, m.Get("persons[0]\\profession\\salary").Data())
+
+	// check if no sibling values have been overridden
+	assert.Equal(t, "Doe", m.Get("persons[0]\\last").Data())
+	assert.Equal(t, "Unknowing", m.Get("persons[0]\\profession\\name").Data())
 }
 
 func TestAccessorsAccessSetInsideArray(t *testing.T) {
