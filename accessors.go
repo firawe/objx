@@ -11,7 +11,7 @@ const (
 	// PathSeparator is the character used to separate the elements
 	// of the keypath.
 	//
-	// For example, `location.address.city`
+	// For example, `location\address\city`
 	PathSeparator string = "\\"
 
 	// arrayAccesRegexString is the regex used to extract the array number
@@ -91,7 +91,8 @@ func getKey(s string) (string, string) {
 
 	mapMatches := mapAccessRegex.FindStringSubmatch(s)
 	if len(mapMatches) > 0 {
-		if _, err := strconv.Atoi(mapMatches[2]); err == nil {
+		// check if match between [ and ] is not a number (then it would be an array access rather than map)
+		if _, err := strconv.Atoi(mapMatches[2]); err != nil {
 			thisSel = mapMatches[1]
 			nextSel = "[" + mapMatches[2] + "]" + mapMatches[3]
 
@@ -102,12 +103,11 @@ func getKey(s string) (string, string) {
 
 			if nextSel == "" {
 				selSegs = []string{"", ""}
-			} else if nextSel[0] == '.' {
+			} else if string(nextSel[0]) == PathSeparator {
 				nextSel = nextSel[1:]
 			}
 		}
 	}
-
 	return thisSel, nextSel
 }
 
@@ -138,10 +138,11 @@ func access(current interface{}, selector string, value interface{}, isSet bool,
 	}
 
 	// get the object in question
+	curMSI := map[string]interface{}{}
 	switch current.(type) {
 	case map[string]interface{}:
-		curMSI := current.(map[string]interface{})
-		if nextSel == "" && isSet {
+		curMSI = current.(map[string]interface{})
+		if nextSel == "" && isSet && index == -1 {
 			curMSI[thisSel] = value
 			return nil
 		}
@@ -160,9 +161,17 @@ func access(current interface{}, selector string, value interface{}, isSet bool,
 	if index > -1 {
 		if array, ok := interSlice(current); ok {
 			if index < len(array) {
-				current = array[index]
+				if isSet && nextSel == "" {
+					array[index] = value
+				} else {
+					current = array[index]
+				}
 			} else {
-				current = nil
+				if isSet && nextSel == "" {
+					curMSI[thisSel] = append(array, value) // set appended array to selector position to keep pointer to original map
+				} else {
+					current = nil
+				}
 			}
 		}
 	}

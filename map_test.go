@@ -107,7 +107,7 @@ func TestConversionJSONInt(t *testing.T) {
 	assert.Nil(t, err)
 	require.NotNil(t, m)
 	assert.Equal(t, 1, m.Get("a").Int())
-	assert.Equal(t, 1, m.Get("b.data").Int())
+	assert.Equal(t, 1, m.Get("b\\data").Int())
 
 	assert.True(t, m.Get("c").IsInterSlice())
 	assert.Equal(t, 1, m.Get("c").InterSlice()[0])
